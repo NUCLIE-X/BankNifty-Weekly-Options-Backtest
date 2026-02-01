@@ -1,99 +1,90 @@
 # BankNifty-Weekly-Options-Backtest
 
-A Python-based backtesting project that implements a BANKNIFTY weekly ATM straddle strategy with 2% OTM protective wings using historical NSE Futures & Options data.  
-This project strictly follows the Quant Research Intern Test Assignment requirements.
+A Python-based backtesting project implementing a **BANKNIFTY weekly ATM straddle strategy with 2% OTM protective wings**, using historical NSE Futures & Options data.  
+Built strictly as per the **Quant Research Intern Test Assignment**.
 
 ---
 
 ## 📌 Strategy Summary
 
-This is a rule-based, non-directional options strategy executed once per trading day:
-
-- Sell ATM Call + ATM Put (weekly expiry) at 10:30 AM  
-- Buy 2% OTM Call & Put as protective wings  
-- Apply 30% Stop Loss and 80% Target (based on straddle premium)  
-- Exit all four legs together  
-- If SL/Target not hit, exit at 3:20 PM on expiry  
-- Starting capital: ₹10,00,000  
+- Sell **ATM Call + ATM Put** (weekly expiry) at **10:30 AM**
+- Buy **2% OTM Call & Put** as protective wings
+- Apply **30% Stop Loss** and **80% Target** (based on ATM straddle premium)
+- Exit **all four legs together**
+- If SL/Target not hit, exit at **3:20 PM on expiry**
+- Starting capital: **₹10,00,000**
 
 ---
 
-## 📂 Required Input Data Files
+## 📂 Required Input Data
 
-### 1️⃣ BANKNIFTY Futures Data  
-**File:** `BANKNIFTY_2017_FUTURES.csv`
-
+### BANKNIFTY Futures (`BANKNIFTY_2017_FUTURES.csv`)
 **Required Columns:**
-- Ticker  
-- Date  
-- Time  
-- Open  
-- High  
-- Low  
-- Close  
-- Volume  
-- OI  
-- Contract  
-- Expiry  
+Ticker, Date, Time, Open, High, Low, Close, Volume, OI, Contract, Expiry  
 
-**Usage:**
-- Futures price at or after 10:30 AM is used to determine the ATM strike  
-- Futures are not traded, only used as reference  
+Used only to determine **ATM strike at 10:30 AM**.
 
 ---
 
-### 2️⃣ BANKNIFTY Options Data  
-**File:** `BANKNIFTY_2017_OPTIONS.csv`
-
+### BANKNIFTY Options (`BANKNIFTY_2017_OPTIONS.csv`)
 **Required Columns:**
-- Ticker  
-- Date  
-- Time  
-- Open  
-- High  
-- Low  
-- Close  
-- Volume  
-- OI  
-- Type (CE / PE)  
-- Strike  
-- Expiry  
-- Contract_Weekly  
-- Contract_Monthly  
+Ticker, Date, Time, Open, High, Low, Close, Volume, OI, Type (CE/PE), Strike, Expiry, Contract_Weekly, Contract_Monthly  
 
-**Rules Applied:**
-- Only weekly contracts are used (Contract_Weekly == "I")  
-- Monthly contracts are ignored  
+Rules:
+- Only **weekly contracts** used (`Contract_Weekly == "I"`)
+- Monthly contracts ignored
 
 ---
 
 ## ⚙️ Working Approach
 
-1. Combine Date and Time into Datetime and sort chronologically  
-2. Filter weekly options only for efficiency  
-3. At 10:30 AM, calculate ATM strike using futures price  
-4. Enter 4-leg position (ATM CE, ATM PE, 2% OTM CE, 2% OTM PE)  
-5. Monitor position for stop-loss or target  
-6. Exit all legs together or at expiry (3:20 PM)  
-7. Update capital and record trade details  
+1. Combine Date + Time into Datetime
+2. Filter weekly options for efficiency
+3. Determine ATM strike using futures price
+4. Enter 4-leg position (ATM CE, ATM PE, 2% OTM CE, 2% OTM PE)
+5. Monitor SL / Target intraday
+6. Exit all legs together or at expiry
+7. Update capital and log trade
 
 ---
 
-## 📊 Generated Outputs
+## 📈 Generated Graphs
 
-### 📈 Graphs
-- EquityCurve.png — capital progression over time  
-- Drawdown.png — peak-to-trough drawdowns  
+### Equity Curve
+![Equity Curve](EquityCurve.png)
 
-### 📑 Reports
-- TradeReport.csv — detailed per-trade execution and PnL  
-- PerformanceStats.csv — summary metrics (ROI, win rate, drawdown, etc.)
+### Drawdown Curve
+![Drawdown](Drawdown.png)
+
+---
+
+## 📑 Performance Statistics (PerformanceStats.csv)
+
+| Metric          | Value      |
+|-----------------|------------|
+| Total Trades    | 243        |
+| Net PnL         | 4,903.60   |
+| ROI (%)         | 0.49       |
+| Win Rate (%)    | 46.52      |
+| Max Drawdown    | -1,734.60  |
+
+---
+
+## 📊 Trade Report Preview (TradeReport.csv)
+
+| Trade Date | Expiry     | ATM | Entry Straddle | Wings Cost | Net Entry | Exit Value | PnL   | Exit Reason | Capital |
+|-----------|------------|-----|----------------|------------|-----------|------------|-------|-------------|---------|
+| 02-01-2017 | 05-01-2017 | 18200 | 308.95 | 41.20 | 267.75 | 365.30 | -97.55 | STOP_LOSS | 999902.5 |
+| 03-01-2017 | 05-01-2017 | 18200 | 255.30 | 38.10 | 217.20 | 11.90 | 205.20 | TARGET | 1000108 |
+| 04-01-2017 | 05-01-2017 | 18000 | 177.75 | 29.80 | 147.95 | 72.00 | 75.95 | EXPIRY | 1000183 |
+
+*(Full data available in `TradeReport.csv`)*
 
 ---
 
 ## 🧪 Libraries Used
 
-All dependencies are listed in `requirements.txt`:
+Dependencies listed in `requirements.txt`:
 
 pandas  
 matplotlib  
@@ -104,25 +95,25 @@ matplotlib
 
 - ATM weekly straddle at 10:30 AM  
 - 2% OTM protective wings included in PnL  
-- 30% Stop Loss and 80% Target  
+- 30% Stop Loss & 80% Target  
 - Expiry exit at 3:20 PM  
 - Capital starts at ₹10,00,000  
 - Trade report generated  
 - Performance stats generated  
-- Equity curve and drawdown plotted  
+- Equity & drawdown plotted  
 
 ---
 
 ## 📝 Notes
 
-- Deterministic, rule-based backtest  
-- No discretionary assumptions  
-- Handles real NSE intraday data issues (missing ticks, liquidity gaps)  
-- Designed for large datasets (~585MB options file)  
+- Deterministic, rule-based backtest
+- No discretionary assumptions
+- Handles real NSE intraday data issues
+- Optimized for large (~585 MB) dataset
 
 ---
 
 ## 👤 Author
 
-Developed as part of a Quant Research Intern Test Assignment  
+Developed as part of a **Quant Research Intern Test Assignment**  
 GitHub: https://github.com/NUCLIE-X
